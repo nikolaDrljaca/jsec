@@ -8,12 +8,15 @@ import java.nio.file.Path;
 public class Main {
     public static void main(String[] args) {
         try {
-            var filePath = Path.of("temp/foo.txt");
-            var content = Files.readAllBytes(filePath);
-            var jsec = new Jsec();
-            var encryptedData = jsec.encryptContent(content);
 
-            try(FileOutputStream stream = new FileOutputStream("temp/foo-enc.txt")) {
+
+
+            var filePath = Path.of("foo.txt");
+            var content = Files.readString(filePath);
+            var jsec = Jsec.getInstance();
+            var encryptedData = jsec.encryptContent(content.getBytes(Charset.defaultCharset()));
+
+            try(FileOutputStream stream = new FileOutputStream("foo-enc.txt")) {
                 stream.write(encryptedData);
             }
 
