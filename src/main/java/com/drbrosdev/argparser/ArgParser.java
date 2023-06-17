@@ -23,6 +23,7 @@ public final class ArgParser {
         this.inFilePath = Path.of(args[1]);
 
         if(args.length == 2) {
+            //currentDir is null when using in current directory
             var currentDir = inFilePath.getParent().toString();
             var filename = inFilePath.getFileName().toString();
             var timestamp =  DateTimeFormatter.ofPattern("(yyyy-MM-dd_HH:mm:ss)").format(LocalDateTime.now());
