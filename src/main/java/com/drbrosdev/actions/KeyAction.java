@@ -36,6 +36,7 @@ public class KeyAction implements Action {
 
             try (FileOutputStream stream = new FileOutputStream(keyFile)) {
                 stream.write(encryptedData);
+                System.out.println("Key saved.");
             }
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
