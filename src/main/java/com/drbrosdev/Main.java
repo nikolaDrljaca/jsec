@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-//        System.out.println(System.getProperty("user.home"));
         try {
             var action = ActionsCreator.create(args);
             if (action == null) {

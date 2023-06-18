@@ -25,6 +25,10 @@ public class ActionsCreator {
                 if(args[0].equals("enc")) return new EncryptAction(inPath, outPath);
                 if(args[0].equals("dec")) return new DecryptAction(inPath, outPath);
             }
+            case "key" -> {
+                if(args.length != 2) throw new IllegalStateException("Provide a key.");
+                return new KeyAction(args[1]);
+            }
             case "help" -> {
                 return new HelpAction();
             }

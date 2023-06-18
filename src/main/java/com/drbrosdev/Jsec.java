@@ -3,11 +3,12 @@ package com.drbrosdev;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Jsec {
-    //TODO: Read this from the .properties file or env variable
-    //Initialize in constructor and use unchecked exceptions -> IllegalStateException etc
-    private final byte[] key = "iamtheexampleKey".getBytes(Charset.defaultCharset());
+    private final byte[] key = "pK1tJrfsgiLvPWJl".getBytes(Charset.defaultCharset());
+    private final byte[] userKey;
     private SecretKeySpec secretKeySpec;
     private Cipher cipher;
     private static Jsec INSTANCE = null;
@@ -23,8 +24,23 @@ public class Jsec {
         try {
             this.secretKeySpec = new SecretKeySpec(key, "AES");
             this.cipher = Cipher.getInstance("AES");
+            this.userKey = initUserKey();
         } catch (Exception e) {
             throw new IllegalArgumentException("");
+        }
+    }
+
+    private byte[] initUserKey() {
+        try {
+            var keyFilePath = Path.of(System.getProperty("user.home"), ".jsec.txt");
+            var keyFile = keyFilePath.toFile();
+            if (keyFile.isFile()) {
+                var content = Files.readAllBytes(keyFilePath);
+                return decryptContent(content, key);
+            }
+            return key;
+        } catch (Exception e) {
+            return key;
         }
     }
 
@@ -38,6 +54,12 @@ public class Jsec {
         }
     }
 
+    public byte[] encryptContent(byte[] content, byte[] key) throws Exception {
+        var spec = new SecretKeySpec(key, "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, spec);
+        return cipher.doFinal(content);
+    }
+
     public byte[] decryptContent(byte[] encContent) {
         try {
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
@@ -46,5 +68,11 @@ public class Jsec {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public byte[] decryptContent(byte[] encContent, byte[] key) throws Exception {
+        var spec = new SecretKeySpec(key, "AES");
+        cipher.init(Cipher.DECRYPT_MODE, spec);
+        return cipher.doFinal(encContent);
     }
 }
