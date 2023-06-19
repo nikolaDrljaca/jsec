@@ -19,10 +19,14 @@ If using wrapper `/.mvnw -Pnative -DskipTests package`
 
 2. Encrypt a file
 
+   `jsec enc <path_to_file>`
+ 
    `jsec enc <path_to_file> <name_of_output_file>`
 
 3. Decrypt a file
 
+   `jsec dec <path_to_file>`
+ 
    `jsec dec <path_to_file> <name_of_output_file>`
 
 ## Notes
