@@ -9,7 +9,6 @@ import java.nio.file.Path;
 public class Jsec {
     private final byte[] key = "pK1tJrfsgiLvPWJl".getBytes(Charset.defaultCharset());
     private final byte[] userKey;
-    private SecretKeySpec secretKeySpec;
     private Cipher cipher;
     private static Jsec INSTANCE = null;
 
@@ -22,7 +21,6 @@ public class Jsec {
 
     private Jsec() {
         try {
-            this.secretKeySpec = new SecretKeySpec(key, "AES");
             this.cipher = Cipher.getInstance("AES");
             this.userKey = initUserKey();
         } catch (Exception e) {
@@ -34,10 +32,14 @@ public class Jsec {
         try {
             var keyFilePath = Path.of(System.getProperty("user.home"), ".jsec.txt");
             var keyFile = keyFilePath.toFile();
+
             if (keyFile.isFile()) {
                 var content = Files.readAllBytes(keyFilePath);
+                if (content.length == 0)
+                    throw new IllegalStateException("Key file contents are empty. Please create a new key.");
                 return decryptContent(content, key);
             }
+
             return key;
         } catch (Exception e) {
             return key;
@@ -45,32 +47,20 @@ public class Jsec {
     }
 
     public byte[] encryptContent(byte[] content) throws Exception {
-        try {
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-            return cipher.doFinal(content);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return encryptContent(content, userKey);
     }
 
-    public byte[] encryptContent(byte[] content, byte[] key) throws Exception {
+    private byte[] encryptContent(byte[] content, byte[] key) throws Exception {
         var spec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, spec);
         return cipher.doFinal(content);
     }
 
-    public byte[] decryptContent(byte[] encContent) {
-        try {
-            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-            return cipher.doFinal(encContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public byte[] decryptContent(byte[] encContent) throws Exception {
+        return decryptContent(encContent, userKey);
     }
 
-    public byte[] decryptContent(byte[] encContent, byte[] key) throws Exception {
+    private byte[] decryptContent(byte[] encContent, byte[] key) throws Exception {
         var spec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.DECRYPT_MODE, spec);
         return cipher.doFinal(encContent);

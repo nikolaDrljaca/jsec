@@ -27,12 +27,13 @@ public class KeyAction implements Action {
             }
 
             var keyFile = keyFilePath.toFile();
+            var in = key.getBytes(Charset.defaultCharset());
+            var jsec = Jsec.getInstance();
+            var encryptedData = jsec.encryptContent(in);
+
             if (!keyFile.isFile()) {
                 keyFile.createNewFile();
             }
-            var in = ("key=" + key).getBytes(Charset.defaultCharset());
-            var jsec = Jsec.getInstance();
-            var encryptedData = jsec.encryptContent(in);
 
             try (FileOutputStream stream = new FileOutputStream(keyFile)) {
                 stream.write(encryptedData);
