@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class EncryptAction implements Action {
     private final Path inFilePath;
@@ -16,6 +18,16 @@ public class EncryptAction implements Action {
         if (!out.isAbsolute()) throw new IllegalArgumentException("Output file path is not aboslute.");
         this.inFilePath = in;
         this.outFilePath = out;
+    }
+
+    public EncryptAction(Path in) {
+        if (!in.isAbsolute()) throw new IllegalArgumentException("Input file path is not absolute.");
+        this.inFilePath = in;
+
+        var fileName = in.getFileName();
+        var timestamp = DateTimeFormatter.ofPattern("[yyyy-MM-dd_HH:mm:ss]").format(LocalDateTime.now());
+        var currentDir = inFilePath.getParent();
+        this.outFilePath = Path.of(currentDir.toString(),timestamp + "-enc-" + fileName);
     }
 
     @Override

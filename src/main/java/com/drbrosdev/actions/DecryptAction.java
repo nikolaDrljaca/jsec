@@ -7,6 +7,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DecryptAction implements Action {
     private final Path inFilePath;
@@ -17,6 +19,16 @@ public class DecryptAction implements Action {
         if (!out.isAbsolute()) throw new IllegalArgumentException("Output file path is not absolute.");
         this.inFilePath = in;
         this.outFilePath = out;
+    }
+
+    public DecryptAction(Path in) {
+        if (!in.isAbsolute()) throw new IllegalArgumentException("Input file path is not absolute.");
+        this.inFilePath = in;
+
+        var fileName = in.getFileName();
+        var timestamp = DateTimeFormatter.ofPattern("[yyyy-MM-dd_HH:mm:ss]").format(LocalDateTime.now());
+        var currentDir = inFilePath.getParent();
+        this.outFilePath = Path.of(currentDir.toString(), timestamp + "-dec-" + fileName);
     }
 
     @Override
